@@ -7,6 +7,47 @@
     });
   }
 
+  // Reveal interactions — gated until first currently item is hovered
+  if (window.matchMedia("(hover: hover)").matches) {
+    var firstItem = document.querySelector(".content--currently .outline-item:first-child");
+    var otherItems = document.querySelectorAll(".content--currently .outline-item:not(:first-child)");
+    var previously = document.querySelector(".content--previously");
+    var unlocked = false;
+
+    function unlockReveals() {
+      if (unlocked) return;
+      unlocked = true;
+      document.body.classList.add("reveals-unlocked");
+    }
+
+    if (firstItem) {
+      var firstMain = firstItem.querySelector(".outline-item-main");
+      if (firstMain) {
+        firstMain.addEventListener("mouseenter", function () {
+          firstItem.classList.add("is-revealed");
+          unlockReveals();
+        });
+      }
+    }
+
+    otherItems.forEach(function (item) {
+      var main = item.querySelector(".outline-item-main");
+      if (!main) return;
+
+      main.addEventListener("mouseenter", function () {
+        if (!unlocked) return;
+        item.classList.add("is-revealed");
+      });
+    });
+
+    if (previously) {
+      previously.addEventListener("mouseenter", function () {
+        if (!unlocked) return;
+        previously.classList.add("is-revealed");
+      });
+    }
+  }
+
   // Custom cursor — smooth, rich follow
   var cursor = document.querySelector(".cursor");
   var cursorDot = document.querySelector(".cursor-dot");
