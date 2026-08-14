@@ -14,113 +14,173 @@
   <title>victor</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="light-theme">
-  <div class="cursor" aria-hidden="true"></div>
-  <div class="cursor-dot" aria-hidden="true"></div>
+<body class="is-full">
 
   <header class="header">
     <a href="https://victorguo.com" class="logo">victor guo</a>
     <nav class="nav">
       <a href="https://x.com/victorgu0" target="_blank" rel="noopener">x</a>
       <a href="https://www.linkedin.com/in/victorg8182/" target="_blank" rel="noopener">linkedin</a>
-      <a href="mailto:victor@alertcreative.com">email</a>
-      <button type="button" class="theme-toggle" aria-label="Toggle theme">
-        <span class="sun-icon">☀</span>
-      </button>
+      <a href="mailto:victor@alertcreative.com" class="nav__mail">
+        <span class="nav__mail-full">victor@alertcreative.com</span>
+        <span class="nav__mail-short">email</span>
+      </a>
     </nav>
   </header>
 
-  <main class="main">
-    <section class="hero">
-      <h1 class="hero-name">Victor</h1>
-      <p class="hero-tagline">creating for billions.</p>
-    </section>
+  <nav class="rail" aria-label="Jump to year">
+    <button type="button" class="rail__item" data-goto="2026"><span>2026</span></button>
+    <button type="button" class="rail__item" data-goto="2025"><span>2025</span></button>
+    <button type="button" class="rail__item" data-goto="2024"><span>2024</span></button>
+    <button type="button" class="rail__item" data-goto="2023"><span>2023</span></button>
+    <button type="button" class="rail__item" data-goto="2022"><span>2022</span></button>
+    <button type="button" class="rail__item" data-goto="2021"><span>2021</span></button>
+  </nav>
 
-    <section class="content content--outline content--currently">
-      <h2 class="section-label">CURRENTLY</h2>
-      <ul class="outline">
-        <li class="outline-item">
-          <p class="outline-item-main">
-            <span class="outline-bullet">◆</span>
-            growth @ <a href="https://composio.dev" target="_blank" rel="noopener">composio</a>
-          </p>
-          <ul class="outline-subtext">
-            <li>
-              <p class="outline-subtext-content">
-                <span class="outline-arrow">↳</span>creator programs, company socials, and influencer partnerships
-              </p>
+  <main class="stage">
+
+    <!-- ================= LEFT: years, now → origin ================= -->
+    <div class="stage__text">
+
+      <section class="panel" data-year="2026" id="y-2026">
+        <div class="panel__inner">
+          <h2 class="panel__title">2026</h2>
+          <p class="panel__lede">owning growth for tech startups</p>
+          <ul class="items">
+            <li class="item">
+              <p class="item__main">growth @ <a href="https://composio.dev" target="_blank" rel="noopener">composio</a></p>
+              <p class="item__note">own all things social media, 150M impressions &amp; 100 creators managed in less than 3 months</p>
+            </li>
+            <li class="item">
+              <p class="item__main">founder @ <a href="https://alertcreative.com" target="_blank" rel="noopener">alert creative</a></p>
+              <p class="item__note">social media consulting for leading tech startups</p>
+            </li>
+            <li class="item">
+              <p class="item__main">cs @ <a href="https://uwaterloo.ca/future-students/programs/computer-science" target="_blank" rel="noopener">uwaterloo</a></p>
+              <p class="item__note">going to class and acing my exams (maybe)</p>
             </li>
           </ul>
-        </li>
-        <li class="outline-item">
-          <p class="outline-item-main">
-            <span class="outline-bullet">◆</span>
-            founder @ <a href="https://alertcreative.com" target="_blank" rel="noopener">alert creative</a>
-          </p>
-          <ul class="outline-subtext">
-            <li>
-              <p class="outline-subtext-content">
-                <span class="outline-arrow">↳</span>2B+ views with influencers — now consulting for tech startups
-              </p>
-            </li>
-          </ul>
-        </li>
-        <li class="outline-item">
-          <p class="outline-item-main">
-            <span class="outline-bullet">◆</span>
-            cs @ <a href="https://uwaterloo.ca/future-students/programs/computer-science" target="_blank" rel="noopener">uwaterloo</a>
-          </p>
-          <ul class="outline-subtext">
-            <li>
-              <p class="outline-subtext-content">
-                <span class="outline-arrow">↳</span>skipping class to make tiktoks lol
-              </p>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </section>
-    <section class="content content--outline content--previously">
-      <div class="previously-reveal-item">
-        <div class="previously-reveal-item__inner">
-          <h2 class="section-label">PREVIOUSLY</h2>
         </div>
-      </div>
-      <ul class="outline">
-        <li class="previously-reveal-item">
-          <div class="previously-reveal-item__inner">
-            <span class="outline-bullet">◆</span>
-            built <a href="https://lindy.ai" target="_blank" rel="noopener">lindy</a>'s ugc program to 100+ creators
-          </div>
-        </li>
-        <li class="previously-reveal-item">
-          <div class="previously-reveal-item__inner">
-            <span class="outline-bullet">◆</span>
-            founded <a href="https://tryplaycreate.com" target="_blank" rel="noopener">playcreate</a> and generated 50M+ views in 10 videos
-          </div>
-        </li>
-        <li class="previously-reveal-item">
-          <div class="previously-reveal-item__inner">
-            <span class="outline-bullet">◆</span>
-            produced some youtube videos for <a href="https://cluely.com" target="_blank" rel="noopener">cluely</a>
-          </div>
-        </li>
-        <li class="previously-reveal-item">
-          <div class="previously-reveal-item__inner">
-            <span class="outline-bullet">◆</span>
-            created X content for VCs at <a href="https://a16z.com" target="_blank" rel="noopener">a16z</a>
-          </div>
-        </li>
-        <li class="previously-reveal-item">
-          <div class="previously-reveal-item__inner">
-            <span class="outline-bullet">◆</span>
-            made $10k editing fortnite montages
-          </div>
-        </li>
-      </ul>
-    </section>
+      </section>
+
+      <section class="panel" data-year="2025" id="y-2025">
+        <div class="panel__inner">
+          <h2 class="panel__title">2025</h2>
+          <p class="panel__lede">pivoting from influencers to tech</p>
+          <ul class="items">
+            <li class="item">
+              <p class="item__main">growth @ <a href="https://lindy.ai" target="_blank" rel="noopener">lindy</a></p>
+              <p class="item__note">advised company's socials, built creator program with 100+ creators</p>
+            </li>
+            <li class="item">
+              <p class="item__main">founder @ <a href="https://alertcreative.com" target="_blank" rel="noopener">alert creative</a></p>
+              <p class="item__note">went from working with influencers like tarayummy, jake webber, &amp; connor sinann, to tech companies like <a href="https://cluely.com" target="_blank" rel="noopener">cluely</a> &amp; <a href="https://a16z.com" target="_blank" rel="noopener">a16z</a></p>
+            </li>
+            <li class="item">
+              <p class="item__main">founder @ <a href="https://tryplaycreate.com" target="_blank" rel="noopener">playcreate</a></p>
+              <p class="item__note">70M impressions in 10 videos, 5-figure revenue</p>
+            </li>
+            <li class="item">
+              <p class="item__main">cs @ <a href="https://uwaterloo.ca/future-students/programs/computer-science" target="_blank" rel="noopener">uwaterloo</a></p>
+              <p class="item__note">graduated high school, started my first year at canada's most prestigious undergrad program</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" data-year="2024" id="y-2024">
+        <div class="panel__inner">
+          <h2 class="panel__title">2024</h2>
+          <p class="panel__lede">getting really good at going viral consistently</p>
+          <ul class="items">
+            <li class="item">
+              <p class="item__main">founder @ <a href="https://alertcreative.com" target="_blank" rel="noopener">alert creative</a></p>
+              <p class="item__note">worked with 100+ influencers, helping with social media strategy and production</p>
+            </li>
+            <li class="item">
+              <p class="item__main">made my first 6-figures off the internet</p>
+              <p class="item__note">from a mix of agency revenue, social media accounts, and investments</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" data-year="2023" id="y-2023">
+        <div class="panel__inner">
+          <h2 class="panel__title">2023</h2>
+          <p class="panel__lede">starting to make significant money off the internet</p>
+          <ul class="items">
+            <li class="item">
+              <p class="item__main">founder @ <a href="https://alertcreative.com" target="_blank" rel="noopener">alert creative</a></p>
+              <p class="item__note">worked with my first client with 1M+ followers</p>
+            </li>
+            <li class="item">
+              <p class="item__main">quit video games</p>
+              <p class="item__note">spent too much time grinding fortnite and valorant, so i quit</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" data-year="2022" id="y-2022">
+        <div class="panel__inner">
+          <h2 class="panel__title">2022</h2>
+          <p class="panel__lede">working with famous people and learning the craft</p>
+          <ul class="items">
+            <li class="item">
+              <p class="item__main">editing for influencers</p>
+              <p class="item__note">started to work with influencers after i made $10k editing fortnite montages</p>
+            </li>
+            <li class="item">
+              <p class="item__main">social media strategy</p>
+              <p class="item__note">got into studying why videos go viral, ran some of my own experiments</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel" data-year="2021" id="y-2021">
+        <div class="panel__inner">
+          <h2 class="panel__title">2021</h2>
+          <p class="panel__lede">my first taste of social media (fortnite?)</p>
+          <ul class="items">
+            <li class="item">
+              <p class="item__main">editing fortnite montages</p>
+              <p class="item__note">learned how to make videos, and earned my first dollar off the internet</p>
+            </li>
+            <li class="item">
+              <p class="item__main">started high school</p>
+              <p class="item__note">went from a middle schooler to a high schooler</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ================= RIGHT: pinned chart ================= -->
+    <div class="stage__viz">
+      <figure class="viz">
+        <figcaption class="viz__head">
+          <p class="viz__label" data-views-context>all-time impressions</p>
+          <p class="viz__total"><span data-views-total>—</span></p>
+          <p class="viz__delta"><span data-views-delta>&nbsp;</span></p>
+        </figcaption>
+        <div class="viz__canvas" id="views-chart"></div>
+      </figure>
+    </div>
+
   </main>
 
+  <button type="button" class="scroll-cue" data-goto="2025" aria-label="scroll back to 2025">
+    <svg class="scroll-cue__arrow" viewBox="0 0 16 22" width="15" height="21" aria-hidden="true">
+      <path d="M8 1v18M1.5 13.5L8 20l6.5-6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="scroll-cue__year">2025</span>
+  </button>
+
+  <script src="views.js"></script>
+  <script src="chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
