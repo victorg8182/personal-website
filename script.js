@@ -115,12 +115,48 @@
       if (k < 1) { glideRAF = requestAnimationFrame(step); return; }
       glideRAF = null;
       releaseGlide();               // snap re-engages exactly on a snap point
+      wheelQuietUntil = ts + WHEEL_COOLDOWN;
     }
     glideRAF = requestAnimationFrame(step);
   }
 
-  /* a real scroll gesture always wins over an in-flight glide */
-  window.addEventListener("wheel", cancelGlide, { passive: true });
+  /* ---------------- one panel per gesture ----------------
+     A mouse wheel emits a burst of discrete deltas, and the browser treats
+     each as its own gesture — so scroll-snap-stop can't stop three years
+     flying past, each restarting the chart's 1.15s transition. Take the wheel
+     over and move exactly one panel per gesture instead. */
+  var WHEEL_THRESHOLD = 22;    // below this is trackpad jitter, not intent
+  var WHEEL_COOLDOWN  = 160;   // swallow the momentum tail after a move lands
+  var paging = loopable;       // same conditions: desktop, full motion
+  var wheelAccum = 0, wheelQuietUntil = 0, wheelIdle = null;
+
+  function stepPanel(dir) {
+    var i = all.findIndex(function (p) { return p.classList.contains("is-active"); });
+    if (i < 0) return;
+    var next = all[i + dir];
+    if (next) glideTo(next.offsetTop);
+  }
+
+  window.addEventListener("wheel", function (e) {
+    if (!paging) { cancelGlide(); return; }   // native scrolling handles it
+    if (e.ctrlKey) return;                    // pinch-zoom, leave alone
+
+    e.preventDefault();                       // we own vertical scrolling here
+
+    /* mid-move, or still riding the tail of the last one */
+    if (glideRAF || e.timeStamp < wheelQuietUntil) { wheelAccum = 0; return; }
+
+    wheelAccum += e.deltaY;
+    clearTimeout(wheelIdle);
+    wheelIdle = setTimeout(function () { wheelAccum = 0; }, 120);
+
+    if (Math.abs(wheelAccum) < WHEEL_THRESHOLD) return;
+    var dir = wheelAccum > 0 ? 1 : -1;
+    wheelAccum = 0;
+    stepPanel(dir);
+  }, { passive: false });
+
+  /* a touch drag always wins over an in-flight glide */
   window.addEventListener("touchstart", cancelGlide, { passive: true });
 
   var jumping = false;
@@ -206,10 +242,11 @@
             : (e.key === "ArrowUp"   || e.key === "PageUp")   ? -1
             : space ? (e.shiftKey ? -1 : 1) : 0;
     if (!dir) return;
+    e.preventDefault();
 
-    var i = all.findIndex(function (p) { return p.classList.contains("is-active"); });
-    var next = all[i + dir];
-    if (next) { e.preventDefault(); glideTo(next.offsetTop); }
+    /* held keys repeat; one move at a time, same as the wheel */
+    if (glideRAF) return;
+    stepPanel(dir);
   });
 
   /* ---------------- boot ---------------- */
