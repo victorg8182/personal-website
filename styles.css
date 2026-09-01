@@ -120,8 +120,10 @@ a:hover { box-shadow: inset 0 -1px 0 var(--ink-2); }
 .rail__item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0;
+  /* the label used to give the button its width; without it, the tick alone
+     would be a 10px target — hold the hit area open instead */
+  width: 2.4rem;
+  padding: 0.42rem 0;
   border: none;
   background: none;
   cursor: pointer;
@@ -139,16 +141,22 @@ a:hover { box-shadow: inset 0 -1px 0 var(--ink-2); }
   background: currentColor;
   transition: width 0.6s var(--ease), background 0.5s var(--ease-soft);
 }
+/* The years themselves are noise — the ticks already say where you are.
+   Kept in the DOM (just clipped) so each button still has a name for screen
+   readers and keyboard users. */
 .rail__item span {
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
-.rail:hover .rail__item span { opacity: 1; transform: none; }
 .rail__item:hover { color: var(--ink-2); }
 .rail__item.is-active { color: var(--ink); }
 .rail__item.is-active::before { width: 22px; }
-.rail__item.is-active span { opacity: 1; transform: none; }
 
 /* ============================================================
    STAGE

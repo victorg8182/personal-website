@@ -74,7 +74,7 @@
      Native smooth scrolling has no duration control and lands too fast for a
      page that changes a whole chart per panel, so drive it ourselves. Snapping
      is suspended for the duration — mandatory snap fights a per-frame tween. */
-  var GLIDE_BASE = 1150;          // one panel; matches the chart's --dur-viz
+  var GLIDE_BASE = 950;           // one panel
   var glideRAF = null, snapWas = null, behaviorWas = null;
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -87,8 +87,11 @@
     releaseGlide();
   }
 
-  function easeInOut(k) {
-    return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  /* Ease OUT, not in-out. An ease-in start is what reads as lag: a cubic-in
+     curve has covered under 1% of the distance 100ms after the wheel moves,
+     so the page looks frozen. This leaves immediately and settles softly. */
+  function easeOut(k) {
+    return 1 - Math.pow(1 - k, 3);
   }
 
   function glideTo(y) {
@@ -111,7 +114,7 @@
     function step(ts) {
       if (t0 === null) t0 = ts;
       var k = Math.min(1, (ts - t0) / dur);
-      window.scrollTo(0, from + delta * easeInOut(k));
+      window.scrollTo(0, from + delta * easeOut(k));
       if (k < 1) { glideRAF = requestAnimationFrame(step); return; }
       glideRAF = null;
       releaseGlide();               // snap re-engages exactly on a snap point
