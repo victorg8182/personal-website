@@ -252,22 +252,35 @@
     stepPanel(dir);
   });
 
-  /* ---------------- boot ---------------- */
-  setActive(firstYear);
-  hasLeftStart = false;
-  body.classList.add("is-full");
+  /* ---------------- boot ----------------
+     The reveal has to wait for a paint. Setting .is-active in this same task
+     puts the class on the panel before the browser has ever painted it at
+     opacity 0 — there's no start value to transition from, so the content
+     simply appears and the intro looks like it never ran. Two frames
+     guarantee a painted "before" for the transition to leave from. */
+  var INTRO_MS = 2200;          // longest strand: the headline count
+
+  body.classList.add("is-full", "is-intro");
   if (window.ViewsChart) window.ViewsChart.setYear(null);
+  if (loopable) hardScrollTo(real[0].offsetTop);   // past the head clone, never a slide
+  onScroll();
+
+  function reveal() {
+    setActive(firstYear);
+    hasLeftStart = false;
+    body.classList.add("is-full");
+    if (window.ViewsChart) window.ViewsChart.setYear(null);
+    onScroll();
+    setTimeout(function () { body.classList.remove("is-intro"); }, INTRO_MS);
+  }
+  requestAnimationFrame(function () { requestAnimationFrame(reveal); });
 
   if (loopable) {
-    /* land on the real first panel, past the head clone — instantly, never a slide */
-    hardScrollTo(real[0].offsetTop);
     window.addEventListener("load", function () {
       hardScrollTo(real[0].offsetTop);
-      setActive(firstYear);
       hasLeftStart = false;
       body.classList.add("is-full");
       if (window.ViewsChart) window.ViewsChart.setYear(null);
     });
   }
-  onScroll();
 })();

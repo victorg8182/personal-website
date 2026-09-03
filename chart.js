@@ -94,19 +94,18 @@
     };
   }
   var easeViz  = bez([0.62, 0.00], [0.16, 1]);   /* --ease-viz  */
-  var easeSoft = bez([0.33, 1.00], [0.68, 1]);   /* --ease-soft */
 
   /* number tween */
   var shown = last.v, tweenRAF = null;
-  function tweenTo(target) {
+  function tweenTo(target, dur, ease) {
     if (!elTotal) return;
     if (reduced) { shown = target; elTotal.textContent = compact(target); return; }
-    var from = shown, delta = target - from, t0 = null, DUR = 750;
+    var from = shown, delta = target - from, t0 = null, DUR = dur || 750;
     if (tweenRAF) cancelAnimationFrame(tweenRAF);
     function step(ts) {
       if (t0 === null) t0 = ts;
       var k = Math.min(1, (ts - t0) / DUR);
-      var e = 1 - Math.pow(1 - k, 4);
+      var e = ease ? ease(k) : 1 - Math.pow(1 - k, 4);
       shown = from + delta * e;
       elTotal.textContent = compact(shown);
       if (k < 1) tweenRAF = requestAnimationFrame(step);
@@ -159,20 +158,6 @@
     return { x: px, y: p[lo].y + (p[hi].y - p[lo].y) * k };
   }
 
-  function pointAtLen(L) {
-    var p = geo.pts, c = geo.cum, n = c.length - 1;
-    if (L <= 0) return p[0];
-    if (L >= c[n]) return p[n];
-    var lo = 0, hi = n;
-    while (hi - lo > 1) {
-      var mid = (lo + hi) >> 1;
-      if (c[mid] <= L) lo = mid; else hi = mid;
-    }
-    var seg = c[hi] - c[lo] || 1;
-    var k = (L - c[lo]) / seg;
-    return { x: p[lo].x + (p[hi].x - p[lo].x) * k, y: p[lo].y + (p[hi].y - p[lo].y) * k };
-  }
-
   function placeDot(pt) {
     if (!nodes.dot) return;
     nodes.dot.setAttribute("cx", pt.x);
@@ -195,6 +180,34 @@
       else dotRAF = null;
     }
     dotRAF = requestAnimationFrame(step);
+  }
+
+  /* ---------------- opening reveal ---------------- */
+  var INTRO_COUNT = 1700;
+
+  /* The graph just fades in (see .chart-data). Only the headline animates:
+     it walks the real series month by month, so it crawls through the early
+     years and takes off through 2024-25 rather than sliding to the answer. */
+  function valueAtProgress(f) {
+    var i = f * (series.length - 1);
+    var lo = Math.floor(i), hi = Math.min(series.length - 1, lo + 1);
+    return series[lo].v + (series[hi].v - series[lo].v) * (i - lo);
+  }
+
+  function introCount(dur) {
+    if (tweenRAF) cancelAnimationFrame(tweenRAF);
+    var t0 = null;
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur);
+      shown = valueAtProgress(k);
+      if (elTotal) elTotal.textContent = compact(shown);
+      if (k < 1) { tweenRAF = requestAnimationFrame(step); return; }
+      tweenRAF = null;
+      shown = last.v;
+      if (elTotal) elTotal.textContent = compact(last.v);
+    }
+    tweenRAF = requestAnimationFrame(step);
   }
 
   function moveDotTo(idx, instant) {
@@ -233,13 +246,8 @@
     }
     /* screen-space polyline + cumulative length — the track the dot rides */
     var pts = series.map(function (p) { return { x: x(p.t), y: y(p.v) }; });
-    var cum = [0];
-    for (var i = 1; i < pts.length; i++) {
-      cum[i] = cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
-    }
-
     geo = { x: x, y: y, plotL: PAD.left, plotR: W - PAD.right, top: PAD.top, innerH: innerH, W: W,
-            pts: pts, cum: cum };
+            pts: pts };
 
     var svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, class: "chart-svg", "aria-hidden": "true" });
 
@@ -266,14 +274,18 @@
     });
     svg.appendChild(band);
 
-    /* gridlines */
+    /* gridlines + labels live in one group so the frame can fade in as a
+       whole — animating them individually would override their own opacities */
+    var frame = el("g", { class: "chart-frame" });
+    svg.appendChild(frame);
+
     (LOG ? DECADES : LIN_TICKS).forEach(function (v) {
       var yy = Math.round(y(v)) + 0.5;
       if (yy < PAD.top - 1 || yy > PAD.top + innerH + 1) return;
-      svg.appendChild(el("line", { x1: PAD.left, y1: yy, x2: W - PAD.right, y2: yy, class: "chart-grid" }));
+      frame.appendChild(el("line", { x1: PAD.left, y1: yy, x2: W - PAD.right, y2: yy, class: "chart-grid" }));
       var lb = el("text", { x: PAD.left - 10, y: yy + 3.2, class: "chart-ylabel", "text-anchor": "end" });
       lb.textContent = compact(v);
-      svg.appendChild(lb);
+      frame.appendChild(lb);
     });
 
     /* x ticks */
@@ -282,10 +294,10 @@
       var t = (yr - 2020) * 12;
       if (t < tMin || t > tMax) return;
       var xx = Math.round(x(t)) + 0.5;
-      svg.appendChild(el("line", { x1: xx, y1: PAD.top, x2: xx, y2: PAD.top + innerH, class: "chart-grid chart-grid--v" }));
+      frame.appendChild(el("line", { x1: xx, y1: PAD.top, x2: xx, y2: PAD.top + innerH, class: "chart-grid chart-grid--v" }));
       var lb = el("text", { x: xx, y: PAD.top + innerH + 16, class: "chart-xlabel", "text-anchor": "middle" });
       lb.textContent = "'" + String(yr).slice(2);
-      svg.appendChild(lb);
+      frame.appendChild(lb);
       xlabels[yr] = lb;
     });
 
@@ -298,16 +310,21 @@
 
     svg.appendChild(el("path", { d: d, class: "chart-line-base" }));
 
+    /* one group for everything plotted, so the intro can fade it as a whole —
+       fading the parts individually would trample the halo's own opacity */
+    var data = el("g", { class: "chart-data" });
+
     var g = el("g", { "clip-path": "url(#viz-clip)" });
     g.appendChild(el("path", { d: areaD, class: "chart-area-hi", fill: "url(#viz-fill)" }));
     var lineHi = el("path", { d: d, class: "chart-line-hi" });
     g.appendChild(lineHi);
-    svg.appendChild(g);
+    data.appendChild(g);
 
     var halo = el("circle", { class: "chart-dot-halo", cx: x(last.t), cy: y(last.v), r: 6 });
     var dot  = el("circle", { class: "chart-dot",      cx: x(last.t), cy: y(last.v), r: 2.7 });
-    svg.appendChild(halo);
-    svg.appendChild(dot);
+    data.appendChild(halo);
+    data.appendChild(dot);
+    svg.appendChild(data);
 
     mount.innerHTML = "";
     mount.appendChild(svg);
@@ -321,18 +338,11 @@
     apply(currentYear, true);
 
     if (intro) {
-      var len = lineHi.getTotalLength();
-      lineHi.style.strokeDasharray = len;
-      lineHi.style.strokeDashoffset = len;
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          lineHi.style.transition = "stroke-dashoffset 1.9s cubic-bezier(0.33, 1, 0.68, 1)";
-          lineHi.style.strokeDashoffset = "0";
-          /* the dot rides the drawing tip in — arc length here, to match the
-             stroke-dashoffset the line is drawn with */
-          travelDot(0, geo.cum[geo.cum.length - 1], 1900, easeSoft, pointAtLen);
-        });
-      });
+      /* The graph itself just fades (.chart-data). Nothing moves — no sweep,
+         no travelling edge. apply() above printed the final total, so wind it
+         back; still pre-paint, so only the zero is ever shown. */
+      if (elTotal) { shown = 0; elTotal.textContent = compact(0); }
+      introCount(INTRO_COUNT);
     }
   }
 
