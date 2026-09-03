@@ -182,17 +182,18 @@
     dotRAF = requestAnimationFrame(step);
   }
 
-  /* ---------------- opening reveal ---------------- */
-  var INTRO_COUNT = 1700;
+  /* ---------------- opening reveal ----------------
+     The graph just fades in (see .chart-data); only the headline animates.
 
-  /* The graph just fades in (see .chart-data). Only the headline animates:
-     it walks the real series month by month, so it crawls through the early
-     years and takes off through 2024-25 rather than sliding to the answer. */
-  function valueAtProgress(f) {
-    var i = f * (series.length - 1);
-    var lo = Math.floor(i), hi = Math.min(series.length - 1, lo + 1);
-    return series[lo].v + (series[hi].v - series[lo].v) * (i - lo);
-  }
+     This used to walk the real series month by month, which sounds nicer than
+     it looks: the data is exponential, so the count sat near zero for the
+     first half and then finished in a rush — no settle at all. Easing the
+     value instead puts the pacing here, where it can be shaped. */
+  var INTRO_COUNT = 1800;
+
+  /* eases in gently, peaks early-middle, then a long taper to a stop:
+     gain per tenth runs 11, 23, 25, 16, 10, 6, 4, 3, 1, 0 */
+  var easeCount = bez([0.30, 0.20], [0.15, 1]);
 
   function introCount(dur) {
     if (tweenRAF) cancelAnimationFrame(tweenRAF);
@@ -200,7 +201,7 @@
     function step(ts) {
       if (t0 === null) t0 = ts;
       var k = Math.min(1, (ts - t0) / dur);
-      shown = valueAtProgress(k);
+      shown = last.v * easeCount(k);
       if (elTotal) elTotal.textContent = compact(shown);
       if (k < 1) { tweenRAF = requestAnimationFrame(step); return; }
       tweenRAF = null;
