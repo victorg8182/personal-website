@@ -74,7 +74,7 @@
      Native smooth scrolling has no duration control and lands too fast for a
      page that changes a whole chart per panel, so drive it ourselves. Snapping
      is suspended for the duration — mandatory snap fights a per-frame tween. */
-  var GLIDE_BASE = 950;           // one panel
+  var GLIDE_BASE = 1150;          // one panel
   var glideRAF = null, snapWas = null, behaviorWas = null;
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -102,7 +102,7 @@
 
     /* a rail click can span five panels — stretch a little, but not linearly */
     var panels = Math.abs(delta) / Math.max(1, window.innerHeight);
-    var dur = Math.min(2200, GLIDE_BASE + 240 * Math.max(0, panels - 1));
+    var dur = Math.min(2600, GLIDE_BASE + 280 * Math.max(0, panels - 1));
 
     cancelGlide();
     snapWas = html.style.scrollSnapType;
@@ -126,7 +126,7 @@
   /* ---------------- one panel per gesture ----------------
      A mouse wheel emits a burst of discrete deltas, and the browser treats
      each as its own gesture — so scroll-snap-stop can't stop three years
-     flying past, each restarting the chart's 1.15s transition. Take the wheel
+     flying past, each restarting the chart's transition. Take the wheel
      over and move exactly one panel per gesture instead. */
   var WHEEL_THRESHOLD = 22;    // below this is trackpad jitter, not intent
   var WHEEL_COOLDOWN  = 160;   // swallow the momentum tail after a move lands
@@ -258,7 +258,7 @@
      opacity 0 — there's no start value to transition from, so the content
      simply appears and the intro looks like it never ran. Two frames
      guarantee a painted "before" for the transition to leave from. */
-  var INTRO_MS = 2200;          // longest strand: the headline count
+  var INTRO_MS = 2800;          // longest strand: the headline count
 
   body.classList.add("is-full", "is-intro");
   if (window.ViewsChart) window.ViewsChart.setYear(null);

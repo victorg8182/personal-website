@@ -100,7 +100,7 @@
   function tweenTo(target, dur, ease) {
     if (!elTotal) return;
     if (reduced) { shown = target; elTotal.textContent = compact(target); return; }
-    var from = shown, delta = target - from, t0 = null, DUR = dur || 750;
+    var from = shown, delta = target - from, t0 = null, DUR = dur || 900;
     if (tweenRAF) cancelAnimationFrame(tweenRAF);
     function step(ts) {
       if (t0 === null) t0 = ts;
@@ -135,13 +135,9 @@
      The marker walks the polyline itself — animating cx/cy in CSS would cut
      the corner and float the dot off the curve mid-transition.
 
-     Two parameterisations, because the dot has a different partner in each
-     case and has to keep step with it:
-       · year change — the band's edges ease in X, so the dot must ease in X
-         too. Easing arc length instead makes it lag through steep stretches
-         (a month of 2024 is many times longer on the curve than on the axis).
-       · intro       — the line draws by stroke-dashoffset, which is arc
-         length, so there the dot eases in arc length to stay at the tip. */
+     It eases in X because the band's edges do: easing arc length instead
+     makes it lag through steep stretches, since a month of 2024 is many
+     times longer on the curve than it is on the axis. */
   var dotX = null, dotRAF = null;
 
   function pointAtX(px) {
@@ -189,7 +185,7 @@
      it looks: the data is exponential, so the count sat near zero for the
      first half and then finished in a rush — no settle at all. Easing the
      value instead puts the pacing here, where it can be shaped. */
-  var INTRO_COUNT = 1800;
+  var INTRO_COUNT = 2100;
 
   /* eases in gently, peaks early-middle, then a long taper to a stop:
      gain per tenth runs 11, 23, 25, 16, 10, 6, 4, 3, 1, 0 */
@@ -221,7 +217,7 @@
     }
     /* same duration and curve as the band's x/width transition, on the same
        axis — so the dot and the highlight edge stay locked together */
-    travelDot(dotX, to, 1100, easeViz, pointAtX);
+    travelDot(dotX, to, 1350, easeViz, pointAtX);   /* matches --dur-viz */
   }
 
   function el(name, attrs) {
