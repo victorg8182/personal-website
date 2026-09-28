@@ -41,6 +41,23 @@
     return s.replace(/\.0+$/, "").replace(/(\.\d*[1-9])0+$/, "$1");
   }
 
+  /* The headline counts, so it needs a steady width. compact() strips trailing
+     zeros — right for an axis label ("2.5B", not "2.50B"), wrong for a number
+     ticking over: 1.10B printed as "1.1B" while 1.02B printed as "1.02B", so
+     the string flickered between four and five characters twenty times during
+     the opening. Always three significant digits instead. */
+  function compactSteady(n) {
+    var a = Math.abs(n);
+    if (a >= 1e9) return steady(n / 1e9) + "B";
+    if (a >= 1e6) return steady(n / 1e6) + "M";
+    if (a >= 1e3) return steady(n / 1e3) + "K";
+    return String(Math.round(n));
+  }
+  function steady(x) {
+    var a = Math.abs(x);
+    return a >= 100 ? x.toFixed(0) : a >= 10 ? x.toFixed(1) : x.toFixed(2);
+  }
+
   /* ---------------- year index ---------------- */
   var byYear = {};
   series.forEach(function (p) {
@@ -99,7 +116,7 @@
   var shown = last.v, tweenRAF = null;
   function tweenTo(target, dur, ease) {
     if (!elTotal) return;
-    if (reduced) { shown = target; elTotal.textContent = compact(target); return; }
+    if (reduced) { shown = target; elTotal.textContent = compactSteady(target); return; }
     var from = shown, delta = target - from, t0 = null, DUR = dur || 900;
     if (tweenRAF) cancelAnimationFrame(tweenRAF);
     function step(ts) {
@@ -107,9 +124,9 @@
       var k = Math.min(1, (ts - t0) / DUR);
       var e = ease ? ease(k) : 1 - Math.pow(1 - k, 4);
       shown = from + delta * e;
-      elTotal.textContent = compact(shown);
+      elTotal.textContent = compactSteady(shown);
       if (k < 1) tweenRAF = requestAnimationFrame(step);
-      else { shown = target; elTotal.textContent = compact(target); }
+      else { shown = target; elTotal.textContent = compactSteady(target); }
     }
     tweenRAF = requestAnimationFrame(step);
   }
@@ -198,11 +215,11 @@
       if (t0 === null) t0 = ts;
       var k = Math.min(1, (ts - t0) / dur);
       shown = last.v * easeCount(k);
-      if (elTotal) elTotal.textContent = compact(shown);
+      if (elTotal) elTotal.textContent = compactSteady(shown);
       if (k < 1) { tweenRAF = requestAnimationFrame(step); return; }
       tweenRAF = null;
       shown = last.v;
-      if (elTotal) elTotal.textContent = compact(last.v);
+      if (elTotal) elTotal.textContent = compactSteady(last.v);
     }
     tweenRAF = requestAnimationFrame(step);
   }
@@ -338,7 +355,7 @@
       /* The graph itself just fades (.chart-data). Nothing moves — no sweep,
          no travelling edge. apply() above printed the final total, so wind it
          back; still pre-paint, so only the zero is ever shown. */
-      if (elTotal) { shown = 0; elTotal.textContent = compact(0); }
+      if (elTotal) { shown = 0; elTotal.textContent = compactSteady(0); }
       introCount(INTRO_COUNT);
     }
   }
@@ -384,7 +401,7 @@
     if (elCtx) elCtx.textContent = ctx;
     if (instant) {
       shown = total;
-      if (elTotal) elTotal.textContent = compact(total);
+      if (elTotal) elTotal.textContent = compactSteady(total);
       if (elDelta) elDelta.textContent = delta;
     } else {
       tweenTo(total);
